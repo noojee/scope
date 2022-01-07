@@ -9,3 +9,8 @@ analyzer:
     # strict-casts: true
   strong-mode:
     implicit-casts: false
+
+
+linter:
+  rules:
+    public_member_api_docs : true     

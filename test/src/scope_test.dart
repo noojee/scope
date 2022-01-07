@@ -83,7 +83,7 @@ void main() {
       expect(hasScopeKey<A>(keyA), isFalse);
     });
   });
-  group('inject()', () {
+  group('use()', () {
     test('outside of provide() fails', () {
       expect(() => use(keyS1), throwsMissingDependencyException);
     });
@@ -97,12 +97,30 @@ void main() {
     });
 
     test('with not-provided key uses default value if available', () {
+      expect(use(keyStrWithDefault), 'StrWithDefault default value');
+      expect(use(keyNullStrWithDefault), isNull);
+      expect(use(keyNullStrWithDefault), isNull);
+    });
+
+    test('use withDefault', () {
+      expect(use(keyS1, withDefault: () => 'local default'), 'local default');
       expect(
-        use(keyStrWithDefault),
-        'StrWithDefault default value',
-      );
-      expect(use(keyNullStrWithDefault), isNull);
-      expect(use(keyNullStrWithDefault), isNull);
+          () => use(keyS1), throwsA(isA<MissingDependencyException<String>>()));
+
+      expect(use(keyStrWithDefault), 'StrWithDefault default value');
+      expect(use(keyStrWithDefault, withDefault: () => 'My default'),
+          'My default');
+
+      Scope()
+        ..value<String>(keyS1, 'Hellow')
+        ..value<String?>(keyStrWithDefault, 'Hellow')
+        ..run(() {
+          expect(use(keyS1), 'Hellow');
+          expect(use(keyS1, withDefault: () => 'bye'), 'Hellow');
+
+          expect(use(keyStrWithDefault), 'Hellow');
+          expect(use(keyStrWithDefault, withDefault: () => 'bye'), 'Hellow');
+        });
     });
 
     test('prefers provided to default value', () {

@@ -1,9 +1,11 @@
 part of scope;
 
-/// The only purpose of [ScopeKey]s is to be unique so that they can be used to
-/// uniquely identify injected values. [ScopeKey]s are opaque – you are
-/// not supposed to read any other information from them except their identity.
-/// You must not extend or implement this class.
+/// The only purpose of [ScopeKey]s is to be globally unique so that they
+/// can be used to  uniquely identify injected values. [ScopeKey]s are opaque
+/// – you are not supposed to read any other information from them except t
+/// heir identity.
+///
+/// You must NOT extend or implement this class.
 ///
 /// The `debugName` is only used in error messages. We recommend that
 /// you use a debugName of the form:
@@ -14,11 +16,39 @@ part of scope;
 /// provided the [T] is nullable (e.g. String?), and is distinct from no value.
 ///
 /// The type argument [T] is used to infer the return type of [use].
+///
+/// ```dart
+///
+/// ScopeKey<int> countKey = ScopeKey<int>(0);
+///
+/// ScopeKey<int> countKey = ScopeKey.withDefault<int>(0);
+/// ```
 @sealed
 class ScopeKey<T> {
-  ScopeKey([String? debugName]) : _defaultValue = Sentinel.noValue {
+  /// Create a ScopeKey with a specific type.
+  ///
+  /// You MUST provide the type!
+  ///
+  /// ```
+  ///  ScopeKey<int> countKey = ScopeKey<int>();
+  ///  Scope()
+  ///  ..value(countKey, 1)
+  ///  .. run(() {
+  ///     int count = use(countKey);
+  /// });
+  /// ```
+  ScopeKey([String? debugName]) : _defaultValue = _Sentinel.noValue {
     _debugName = debugName ?? T.runtimeType.toString();
   }
+
+  /// Create a ScopeKey that provides a default value if the
+  /// key has not been added to the scope.
+  ///
+  /// ```
+  ///  ScopeKey<int> countKey = ScopeKey.withDefault<int>(0);
+  ///
+  ///  int count = use(countKey);
+  /// ```
   ScopeKey.withDefault(T defaultValue, String? debugName)
       : _defaultValue = defaultValue {
     _debugName = debugName ?? T.runtimeType.toString();
@@ -35,7 +65,7 @@ class ScopeKey<T> {
   String toString() => 'ScopeKey(${_debugName!})';
 }
 
-enum Sentinel {
+enum _Sentinel {
   /// Used to indicate that a [ScopeKey] has no default value – which is
   /// different from a default value of `null`.
   noValue

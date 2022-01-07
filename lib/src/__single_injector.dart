@@ -1,10 +1,12 @@
 part of scope;
 
-/// Used by [Scope.single].
-class SingleInjector extends Injector {
-  SingleInjector(this.factories) : super(<ScopeKey<dynamic>, dynamic>{});
+typedef _ValueFactory<T> = T? Function();
 
-  final Map<ScopeKey<dynamic>, ValueFactory<dynamic>> factories;
+/// Used by [Scope.single].
+class _SingleInjector extends _Injector {
+  _SingleInjector(this.factories) : super(<ScopeKey<dynamic>, dynamic>{});
+
+  final Map<ScopeKey<dynamic>, _ValueFactory<dynamic>> factories;
 
   /// All keys from [factories] for which the factory function has been called
   /// and not yet returned. Iteration order represents call order.

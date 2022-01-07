@@ -1,3 +1,9 @@
+# 2.2.0
+- ENH: Added new method hasScopeValue
+- ENH: added withDefault argument to `use` to provide site specific defaults
+- BREAKING: Subtle change to method hasScopeKey. Previously it return true if the key was in scope or if it had a default value.  Use hasScopeValue to get the original implementation and use hasScopeKey to check if a key exists.
+
+
 # 2.1.2
 - purged singleton from the doc as it is now single.
 

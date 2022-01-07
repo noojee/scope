@@ -2,14 +2,14 @@ part of scope;
 
 /// Implements the key store and lookup mechanism. The Injector [Type] is used
 /// as the key into a [Zone] to store the injector instance for that zone.
-class Injector {
-  Injector(this.values) : parent = Zone.current[Injector] as Injector?;
-  const Injector.empty()
+class _Injector {
+  _Injector(this.values) : parent = Zone.current[_Injector] as _Injector?;
+  const _Injector.empty()
       : values = const <ScopeKey<dynamic>, dynamic>{},
         parent = null;
 
   final Map<ScopeKey<dynamic>, dynamic> values;
-  final Injector? parent;
+  final _Injector? parent;
 
   T get<T>(ScopeKey<T> key) {
     if (values.containsKey(key)) {
@@ -27,7 +27,7 @@ class Injector {
     if (parent != null) {
       return parent!.get(key);
     }
-    if (key._defaultValue != Sentinel.noValue) {
+    if (key._defaultValue != _Sentinel.noValue) {
       return key._defaultValue as T;
     }
 
@@ -37,15 +37,30 @@ class Injector {
     return null as T;
   }
 
-  bool hasKey<T>(ScopeKey<T> key) {
+  /// true if the [key] is in scope
+  /// or if its not in scope but has a default
+  /// value.
+  bool hasValue<T>(ScopeKey<T> key) {
     if (values.containsKey(key)) {
       return true;
     }
     if (parent != null) {
       return parent!.hasKey(key);
     }
-    if (key._defaultValue != Sentinel.noValue) {
+    if (key._defaultValue != _Sentinel.noValue) {
       return true;
+    }
+
+    return false;
+  }
+
+  /// true if [key] is in scope.
+  bool hasKey<T>(ScopeKey<T> key) {
+    if (values.containsKey(key)) {
+      return true;
+    }
+    if (parent != null) {
+      return parent!.hasKey(key);
     }
 
     return false;
