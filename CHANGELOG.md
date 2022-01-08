@@ -1,3 +1,6 @@
+# 2.2.1
+- Improved debug messages for ScopeKeys by providing the type and debug name if available.
+
 # 2.2.0
 - ENH: Added new method hasScopeValue
 - ENH: added withDefault argument to `use` to provide site specific defaults
