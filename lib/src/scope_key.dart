@@ -38,7 +38,7 @@ class ScopeKey<T> {
   /// });
   /// ```
   ScopeKey([String? debugName]) : _defaultValue = _Sentinel.noValue {
-    _debugName = debugName ?? T.runtimeType.toString();
+    _debugName = debugName ?? 'debugName=?';
   }
 
   /// Create a ScopeKey that provides a default value if the
@@ -51,10 +51,10 @@ class ScopeKey<T> {
   /// ```
   ScopeKey.withDefault(T defaultValue, String? debugName)
       : _defaultValue = defaultValue {
-    _debugName = debugName ?? T.runtimeType.toString();
+    _debugName = debugName ?? 'debugName=?';
   }
 
-  late final String? _debugName;
+  late final String _debugName;
   final Object? _defaultValue;
 
   T _cast(dynamic v) => v as T;
@@ -62,9 +62,10 @@ class ScopeKey<T> {
   T Function() _castFunction(dynamic v) => v as T Function();
 
   @override
-  String toString() => 'ScopeKey(${_debugName!})';
+  String toString() => 'ScopeKey<${_typeOf<T>().toString()}>($_debugName)';
 }
 
+Type _typeOf<T>() => T;
 enum _Sentinel {
   /// Used to indicate that a [ScopeKey] has no default value – which is
   /// different from a default value of `null`.

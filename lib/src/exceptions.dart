@@ -12,9 +12,9 @@ class MissingDependencyException<T> implements Exception {
   final ScopeKey<T> _key;
 
   @override
-  String toString() =>
-      'MissingDependencyException: No value has been provided for $_key, '
-      'and it has no default value';
+  String toString() => 'MissingDependencyException: '
+      'No value has been provided for $_key '
+      'and it has no default value.';
 }
 
 /// Thrown by [use] when called inside a [Scope.single] or [Scope.sequence]
