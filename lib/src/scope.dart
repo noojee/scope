@@ -55,6 +55,13 @@ class Scope {
   /// The [value] can be retrieve by calling
   /// [use] from anywhere within the action
   /// method provided to [run]
+  ///
+  /// ```dart
+  /// Scope()
+  ///   ..value<int>(ageKey, 18)
+  ///   ..value<int>(heightKey, getHeight())
+  ///   ..run(() {}
+  /// ```
   void value<T>(ScopeKey<T> key, T value) {
     if (_provided.containsKey(key)) {
       throw DuplicateDependencyException(key);
@@ -68,13 +75,20 @@ class Scope {
   void factory<T>(ScopeKey<T> key, T Function() factory) =>
       single(key, factory);
 
-  /// Injects a [single] value into the [Scope].
+  /// Injects a single value into the [Scope] from a factory method.
   ///
-  /// A [single] may [use] [value]s, other [single]s
-  /// and [sequence]s registered within the same [Scope].
+  /// The [single]'s factory method may [use] [value]s, other [single]s
+  /// and [sequence]s registered within the SAME [Scope].
   ///
   /// Each [single] is eagerly called when [Scope.run] is called
   /// and are fully resolved when the [Scope.run]'s s action is called.
+  ///
+  /// ```dart
+  /// Scope()
+  ///   ..single<int>(ageKey, () => getDbConnection())
+  ///   ..run(() {}
+  /// ```
+
   void single<T>(ScopeKey<T> key, T Function() factory) {
     if (_singles.containsKey(key)) {
       throw DuplicateDependencyException(key);
@@ -82,18 +96,28 @@ class Scope {
     _singles.putIfAbsent(key, () => factory);
   }
 
-  /// Injects a generated value into the [Scope].
+  /// Injects a generated sequence of values into the [Scope]
+  /// from a factory method.
+  ///
+  /// The [sequence]'s factory method may [use] [value]s, [single]s
+  /// and other [sequence]s registered within the SAME [Scope].
   ///
   /// The [sequence]'s [factory] method is called each time [use]
-  /// for the [key] is called.
+  /// for [key] is called.
   ///
   /// The difference between [single] and [sequence] is that
   /// for a [single] the [factory] method is only called once where as
   /// the [sequence]s [factory] method is called each time [use] for
-  /// the [sequence]'s key is called.
+  /// the [sequence]'s [key] is called.
   ///
   /// The [sequence] [factory] method is NOT called when the [run] method
   /// is called.
+  ///
+  /// ```dart
+  /// Scope()
+  ///   ..sequence<int>(ageKey, () => genRandomInt())
+  ///   ..run(() {}
+  /// ```
   ///
   void sequence<T>(ScopeKey<T> key, T Function() factory) {
     if (_sequences.containsKey(key)) {
