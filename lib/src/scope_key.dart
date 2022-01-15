@@ -49,7 +49,7 @@ class ScopeKey<T> {
   ///
   ///  int count = use(countKey);
   /// ```
-  ScopeKey.withDefault(T defaultValue, String? debugName)
+  ScopeKey.withDefault(T defaultValue, [String? debugName])
       : _defaultValue = defaultValue {
     _debugName = debugName ?? 'debugName=?';
   }
