@@ -34,7 +34,7 @@ class CircularDependencyException<T> implements Exception {
 }
 
 /// Thrown if an attempt is made to inject the same [ScopeKey]
-/// twice.
+/// twice into the same Scope.
 class DuplicateDependencyException<T> implements Exception {
   /// Thrown if an attempt is made to inject the same [ScopeKey]
   /// twice.
