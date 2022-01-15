@@ -1,4 +1,4 @@
-part of scope;
+part of 'scope.dart';
 
 /// The only purpose of [ScopeKey]s is to be globally unique so that they
 /// can be used to  uniquely identify injected values. [ScopeKey]s are opaque
@@ -55,19 +55,52 @@ class ScopeKey<T> {
   }
 
   late final String _debugName;
+
+  /// We use [Object] to hold the default as it
+  /// can contain [_Sentinel.noValue]
+  /// A [_defaultValue] has three states
+  /// * [_Sentinel.noValue] indicating no default value
+  /// * null - a default value of null has been supplied
+  /// * some value.
   final Object? _defaultValue;
 
-  T _cast(dynamic v) => v as T;
+  /// Returns true if the key was created with a default value.
+  /// A default has three states
+  /// * no value set
+  /// * null - a default value of null has been supplied
+  /// * some value.
+  bool get hasDefault => _defaultValue != _Sentinel.noValue;
 
-  T Function() _castFunction(dynamic v) => v as T Function();
+  /// test if the keys value is of type T.
+  T testCast(dynamic v) => v as T;
+
+  /// test if the keys function returns a value of type T.
+  T Function() testFunctionCast(dynamic v) => v as T Function();
 
   @override
   String toString() => 'ScopeKey<${_typeOf<T>().toString()}>($_debugName)';
 }
 
 Type _typeOf<T>() => T;
+
+/// Used when callng [ScopeKey()] to indicate that no default value has
+/// been provides (as opposed to the default being null)
 enum _Sentinel {
   /// Used to indicate that a [ScopeKey] has no default value – which is
   /// different from a default value of `null`.
   noValue
 }
+
+/// Returns [ScopeKey._defaultValue]
+T defaultValue<T>(ScopeKey<T> key) => key._defaultValue as T;
+
+// /// These cast values are designed to force a [TypeError]
+// /// to be thrown at the point of injection of the type of the
+// /// passed value doesn't match the type of the key.
+
+// /// test if the keys value is of type T.
+// T testCast<T>(ScopeKey<T> key, dynamic v) => v as T;
+
+// /// test if the keys function returns a value of type T.
+// dynamic Function() testFunctionCast(ScopeKey<dynamic> key, dynamic v) =>
+//     v as T Function();

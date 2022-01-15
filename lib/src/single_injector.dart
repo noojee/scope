@@ -1,11 +1,18 @@
-part of scope;
+import 'dart:async';
+import 'dart:collection';
+
+import 'exceptions.dart';
+import 'injector.dart';
+import 'scope.dart';
 
 typedef _ValueFactory<T> = T? Function();
 
 /// Used by [Scope.single].
-class _SingleInjector extends _Injector {
-  _SingleInjector(this.factories) : super(<ScopeKey<dynamic>, dynamic>{});
+class SingleInjector extends Injector {
+  ///
+  SingleInjector(this.factories) : super(<ScopeKey<dynamic>, dynamic>{});
 
+  ///
   final Map<ScopeKey<dynamic>, _ValueFactory<dynamic>> factories;
 
   /// All keys from [factories] for which the factory function has been called
@@ -34,7 +41,7 @@ class _SingleInjector extends _Injector {
         throw CircularDependencyException(
             List.unmodifiable(underConstruction.skipWhile((t) => t != key)));
       }
-      values[key] = key._cast(zone.run<T>(factories[key]! as T Function()));
+      values[key] = zone.run<T>(factories[key]! as T Function());
       // ignore: prefer_asserts_with_message
       assert(underConstruction.last == key);
       underConstruction.remove(key);

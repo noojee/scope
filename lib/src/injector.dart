@@ -1,16 +1,31 @@
-part of scope;
+import 'dart:async';
+
+import 'package:meta/meta.dart';
+
+import 'exceptions.dart';
+import 'scope.dart';
 
 /// Implements the key store and lookup mechanism. The Injector [Type] is used
 /// as the key into a [Zone] to store the injector instance for that zone.
-class _Injector {
-  _Injector(this.values) : parent = Zone.current[_Injector] as _Injector?;
-  const _Injector.empty()
+class Injector {
+  ///
+  Injector(this.values) : parent = Zone.current[Injector] as Injector?;
+
+  ///
+  const Injector.empty()
       : values = const <ScopeKey<dynamic>, dynamic>{},
         parent = null;
 
-  final Map<ScopeKey<dynamic>, dynamic> values;
-  final _Injector? parent;
+  @protected
 
+  ///
+  final Map<ScopeKey<dynamic>, dynamic> values;
+  @protected
+
+  ///
+  final Injector? parent;
+
+  /// get the value associated with [key]
   T get<T>(ScopeKey<T> key) {
     if (values.containsKey(key)) {
       dynamic value = values[key];
@@ -27,8 +42,8 @@ class _Injector {
     if (parent != null) {
       return parent!.get(key);
     }
-    if (key._defaultValue != _Sentinel.noValue) {
-      return key._defaultValue as T;
+    if (key.hasDefault) {
+      return defaultValue(key);
     }
 
     if (!isNullable<T>()) {
@@ -47,7 +62,7 @@ class _Injector {
     if (parent != null) {
       return parent!.hasKey(key);
     }
-    if (key._defaultValue != _Sentinel.noValue) {
+    if (key.hasDefault) {
       return true;
     }
 

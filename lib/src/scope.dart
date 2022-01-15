@@ -1,15 +1,15 @@
 library scope;
 
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:meta/meta.dart';
 
 import 'exceptions.dart';
+import 'global_scope.dart';
+import 'injector.dart';
+import 'single_injector.dart';
 
 part 'scope_key.dart';
-part '__injector.dart';
-part '__single_injector.dart';
 
 typedef _Factory = dynamic Function();
 
@@ -63,10 +63,20 @@ class Scope {
   ///   ..run(() {}
   /// ```
   void value<T>(ScopeKey<T> key, T value) {
+    _checkDuplicateKey(key);
+    _provided.putIfAbsent(key, () => value);
+  }
+
+  void _checkDuplicateKey<T>(ScopeKey<T> key) {
     if (_provided.containsKey(key)) {
       throw DuplicateDependencyException(key);
     }
-    _provided.putIfAbsent(key, () => value);
+    if (_singles.containsKey(key)) {
+      throw DuplicateDependencyException(key);
+    }
+    if (_sequences.containsKey(key)) {
+      throw DuplicateDependencyException(key);
+    }
   }
 
   @Deprecated('Use single')
@@ -90,9 +100,7 @@ class Scope {
   /// ```
 
   void single<T>(ScopeKey<T> key, T Function() factory) {
-    if (_singles.containsKey(key)) {
-      throw DuplicateDependencyException(key);
-    }
+    _checkDuplicateKey(key);
     _singles.putIfAbsent(key, () => factory);
   }
 
@@ -120,9 +128,7 @@ class Scope {
   /// ```
   ///
   void sequence<T>(ScopeKey<T> key, T Function() factory) {
-    if (_sequences.containsKey(key)) {
-      throw DuplicateDependencyException(key);
-    }
+    _checkDuplicateKey(key);
     value<dynamic>(key, factory);
   }
 
@@ -130,29 +136,36 @@ class Scope {
   R run<R>(R Function() action) {
     _resolveSingles();
 
+    // /// run the action adding our values into the zone map.
+    // return runZoned(action, zoneValues: {
+    //   _Injector: _Injector(_provided.map<ScopeKey<dynamic>, dynamic>(
+    //       (key, dynamic v) => MapEntry<ScopeKey<dynamic>, dynamic>(key, v))),
+    // });
+
     return runZoned(action, zoneValues: {
-      _Injector:
-          _Injector(_provided.map<ScopeKey<dynamic>, dynamic>((t, dynamic v) {
+      Injector:
+          Injector(_provided.map<ScopeKey<dynamic>, dynamic>((key, dynamic v) {
         if (v is Function) {
-          return MapEntry<ScopeKey<dynamic>, dynamic>(t, t._castFunction(v));
+          return MapEntry<ScopeKey<dynamic>, dynamic>(
+              key, key.testFunctionCast(v));
         } else {
-          return MapEntry<ScopeKey<dynamic>, dynamic>(t, t._cast(v));
+          return MapEntry<ScopeKey<dynamic>, dynamic>(key, key.testCast(v));
         }
       })),
     });
   }
 
   void _resolveSingles() {
-    final injector = _SingleInjector(_singles);
+    final injector = SingleInjector(_singles);
     runZoned(() {
       injector.zone = Zone.current;
       // Cause [injector] to call all factories.
       for (final key in _singles.keys) {
         /// Resolve the singlton by calling its factory method
-        /// and adding it as a value.
-        value<dynamic>(key, injector.get<dynamic>(key));
+        /// and adding to the list of provided values.
+        _provided.putIfAbsent(key, () => injector.get<dynamic>(key));
       }
-    }, zoneValues: {_Injector: injector});
+    }, zoneValues: {Injector: injector});
   }
 
   /// Returns the value provided for [key], or the keys default value if no
@@ -184,11 +197,18 @@ class Scope {
   static bool isWithinScope() => _isWithinScope();
 }
 
-/// Returns the value provided for [key], or the keys default value if no
-/// value was provided.
+/// Returns the value injected for [key]
+///
+/// The key is searched for in the following order
+/// and the first value is returned.
+///
+/// * the hierarchy of [Scope]s
+/// * the [GlobalScope].
+/// * check if [withDefault] was passed a value
+/// * check if the [key] passed a default to [ScopeKey]
 ///
 /// A [MissingDependencyException] will be thrown if the passed [key]
-/// is not in scope.
+/// is not in any scope and no defaults were found.
 ///
 /// A [CircularDependencyException] will be thrown if a circular
 /// dependency is discovered values provided by [Scope.single]
@@ -198,16 +218,22 @@ T use<T>(ScopeKey<T> key, {T Function()? withDefault}) =>
 
 T _use<T>(ScopeKey<T> key, {T Function()? withDefault}) {
   final injector =
-      (Zone.current[_Injector] as _Injector?) ?? const _Injector.empty();
+      (Zone.current[Injector] as Injector?) ?? const Injector.empty();
 
   T value;
   if (_hasScopeKey(key)) {
+    /// we have a [ScopeKey]
     value = injector.get(key);
+  } else if (GlobalScope().hasScopeKey(key)) {
+    // we have a global key
+    value = GlobalScope().use(key);
   } else if (withDefault != null) {
+    /// no key but user called 'use' with a default.
     value = withDefault();
   } else {
-    /// the key may have a default so lets get it
-    /// or throw a MissingDependencyException
+    /// no key nor value passed to  [withDefault]
+    /// so see if the key has a default.
+    /// otherwise throw a MissingDependencyException
     value = injector.get(key);
   }
 
@@ -235,7 +261,7 @@ bool hasScopeValue<T>(ScopeKey<T> key) => _hasScopeValue(key);
 bool _hasScopeValue<T>(ScopeKey<T> key) {
   var _hasScopeKey = true;
   final injector =
-      (Zone.current[_Injector] as _Injector?) ?? const _Injector.empty();
+      (Zone.current[Injector] as Injector?) ?? const Injector.empty();
   if (injector.hasValue(key)) {
     _hasScopeKey = true;
   } else {
@@ -248,7 +274,7 @@ bool _hasScopeValue<T>(ScopeKey<T> key) {
 bool _hasScopeKey<T>(ScopeKey<T> key) {
   var _hasScopeKey = true;
   final injector =
-      (Zone.current[_Injector] as _Injector?) ?? const _Injector.empty();
+      (Zone.current[Injector] as Injector?) ?? const Injector.empty();
   if (injector.hasKey(key)) {
     // final value = injector.get(key);
     // if (isNullable<T>() && value == null) {
@@ -264,4 +290,4 @@ bool _hasScopeKey<T>(ScopeKey<T> key) {
 /// Returns true if the caller is running within a [Scope]
 bool isWithinScope() => _isWithinScope();
 
-bool _isWithinScope() => Zone.current[_Injector] != null;
+bool _isWithinScope() => Zone.current[Injector] != null;

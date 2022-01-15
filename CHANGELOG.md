@@ -1,3 +1,6 @@
+# 2.3.0-beta.1
+- Added a GlobalScope object which implements a Singleton pattern which can be overriden by injecting a Scope.
+
 # 2.2.1
 - Improved debug messages for ScopeKeys by providing the type and debug name if available.
 

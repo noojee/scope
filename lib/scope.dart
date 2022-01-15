@@ -3,5 +3,6 @@ export 'src/exceptions.dart'
         MissingDependencyException,
         CircularDependencyException,
         DuplicateDependencyException;
+export 'src/global_scope.dart';
 export 'src/scope.dart'
-    show Scope, ScopeKey, use, hasScopeKey, isWithinScope, isNullable;
+    show Scope, use, hasScopeKey, isWithinScope, isNullable, ScopeKey;
