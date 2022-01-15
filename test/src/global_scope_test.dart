@@ -8,17 +8,17 @@ final realUser = User('real');
 final testUser = User('test');
 
 void main() {
-  GlobalScope().single(userKey, () => realUser);
+  GlobalScope().single<User>(userKey, () => realUser);
 
   var counter = 0;
-  GlobalScope().sequence(counterKey, () => counter++);
+  GlobalScope().sequence<int>(counterKey, () => counter++);
 
   group('global scope', () {
     test('value with override', () async {
       expect(use(userKey), realUser);
 
       Scope()
-        ..value(userKey, testUser)
+        ..value<User>(userKey, testUser)
         ..run(() {
           expect(use(userKey), testUser);
         });
@@ -29,7 +29,7 @@ void main() {
       expect(use(userKey), realUser);
 
       Scope()
-        ..value(userKey, testUser)
+        ..value<User>(userKey, testUser)
         ..run(() {
           expect(use(userKey), testUser);
         });
@@ -42,7 +42,7 @@ void main() {
 
       var testCounter = 0;
       Scope()
-        ..sequence(counterKey, () => testCounter++)
+        ..sequence<int>(counterKey, () => testCounter++)
         ..run(() {
           expect(use(counterKey), 0);
           expect(use(counterKey), 1);
