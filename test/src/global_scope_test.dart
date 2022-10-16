@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'package:scope/scope.dart';
 import 'package:test/test.dart';
 
@@ -26,7 +25,7 @@ void main() {
 
       Scope()
         ..value<User>(userKey, testUser)
-        ..run(() {
+        ..runSync(() {
           expect(use(userKey), testUser);
         });
       expect(use(userKey), realUser);
@@ -37,7 +36,7 @@ void main() {
 
       Scope()
         ..value<User>(userKey, testUser)
-        ..run(() {
+        ..runSync(() {
           expect(use(userKey), testUser);
         });
       expect(use(userKey), realUser);
@@ -50,7 +49,7 @@ void main() {
       var testCounter = 0;
       Scope()
         ..sequence<int>(counterKey, () => testCounter++)
-        ..run(() {
+        ..runSync(() {
           expect(use(counterKey), 0);
           expect(use(counterKey), 1);
         });
@@ -58,7 +57,6 @@ void main() {
     });
   });
 }
-
 
 class User {
   User(this.name);

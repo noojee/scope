@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 part of 'scope.dart';
 
 /// The only purpose of [ScopeKey]s is to be globally unique so that they

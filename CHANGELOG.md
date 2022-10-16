@@ -1,3 +1,35 @@
+# 3.0.0
+- BREAKING: The Scope.run method is now asynchronous. Use Scope.runSync to run a synchronous method.
+  You will likely have to change how you call the run method.
+  If you have been using something like:
+  ``` 
+
+    final scope = Scope()
+      ..value<int>(keyAge, 10)
+      ..run(()  {
+      Future.delayed(oneSecond, () {
+        print('Age: ${use(keyAge)}');
+      });
+    });
+  ```
+
+  You will need to change it to:
+  ```
+    final scope = Scope()
+      ..value<int>(keyAge, 10);
+
+    await scope.run(() async {
+      Future.delayed(oneSecond, () {
+        print('Age: ${use(keyAge)}');
+      });
+    });
+    ```
+
+- added copyright notices.
+- Created an example of how overrides work.
+- Changed the debugName on ScopeKey.withDefault to optional to match ScopeKey.
+- Added missing types from global scope unit tests.
+
 # 2.3.0-beta.1
 - Added a GlobalScope object which implements a Singleton pattern which can be overriden by injecting a Scope.
 

@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 /// Example of how you might use Scope to implement a Db Transaction
 /// and inject depedencies such as the tenant into each query.
 ///
@@ -14,29 +13,25 @@ library scope.example;
 import 'package:money2/money2.dart';
 import 'package:scope/scope.dart';
 
-
 /// declare the keys we use to inject values.
 final tenantKey = ScopeKey<int>();
 final licenseType = ScopeKey<LicenseType>();
 final licenseFee = ScopeKey<Money>();
 
-
-void main() {
+void main() async {
   /// Inject details required to bill a tenant.
-  Scope()
+  final scope = Scope()
     ..value(tenantKey, 1)
     ..value(licenseType, LicenseType.pro)
-    ..single(licenseFee, getLicenseFee)
-    ..run(() {
-      Tenant().bill();
-    });
+    ..single(licenseFee, getLicenseFee);
+  await scope.run(() async {
+    await Tenant().bill();
+  });
 }
-
 
 class Tenant {
   Future<void> bill() async {
     await withTransaction<void>(() async {
-      
       /// get the injected Db.
       Transaction.current.db
         ..query(
@@ -59,7 +54,7 @@ Future<R?> withTransaction<R>(Future<R> Function() action) async {
     final transaction = Transaction<R>(db);
 
     return await (Scope()..value(Transaction.transactionKey, transaction))
-        .run(() async => transaction.run(action));
+        .runSync(() async => transaction.run(action));
   } finally {
     DbPool().release(db);
   }
@@ -100,8 +95,6 @@ class Transaction<R> {
     return result;
   }
 }
-
-
 
 class TransactionNotInScopeException implements Exception {}
 

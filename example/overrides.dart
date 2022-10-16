@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'package:scope/scope.dart';
 
 final userKey = ScopeKey<User>();
@@ -33,7 +32,7 @@ void main() {
   /// override the GlobalScope with outerscope
   Scope('outerscope')
     ..value<User>(userKey, testUser)
-    ..run(() {
+    ..runSync(() {
       assert(use(userKey) == testUser, 'take from outerscope');
       assert(use(counterKey) == 0, 'always from the GlobalScope');
     });
@@ -44,12 +43,12 @@ void main() {
   /// innerscope
   Scope('outerscope')
     ..value<User>(userKey, testUser)
-    ..run(() {
+    ..runSync(() {
       assert(use(counterKey) == 2, 'always from the GlobalScope');
 
       Scope('innerscope')
         ..value<User>(userKey, innerUser)
-        ..run(() {
+        ..runSync(() {
           assert(use(userKey) == innerUser, 'take from innerscope');
           assert(use(counterKey) == 3, 'always from the GlobalScope');
         });
@@ -78,7 +77,7 @@ void main() {
   /// override the GlobalScope with outerscope
   Scope('outerscope')
     ..value<Db>(dbKey, globalDb)
-    ..run(() {
+    ..runSync(() {
       assert(use(dbKey) == globalDb, 'take from outerscope');
       assert(use(counterKey) == 5, 'always from the GlobalScope');
     });

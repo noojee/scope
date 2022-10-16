@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'dart:convert';
 import 'dart:math';
 
@@ -46,7 +45,7 @@ void main() {
       ..value<String>(keyName, 'Help me')
       ..single<String>(keySeed, () => getRandString(5))
       ..sequence<String>(keyRandom, () => getRandString(6))
-      ..run(() {
+      ..runSync(() {
         print('Age: ${use(keyAge)} Name: ${use(keyName)} '
             'Random Factory: ${use(keyRandom)}');
       });
@@ -58,7 +57,7 @@ void main() {
 
       final scope = Scope()..value<int>(keyAge, 18);
 
-      final one = await scope.run<Future<int>>(() async {
+      final one = await scope.run<int>(() async {
         final delayedvalue =
             Future<int>.delayed(const Duration(seconds: 1), () => use(keyAge));
 
@@ -71,7 +70,7 @@ void main() {
 
   group('existance', () {
     test('withinScope', () {
-      Scope().run(() {
+      Scope().runSync(() {
         expect(isWithinScope(), isTrue);
       });
     });
@@ -82,7 +81,7 @@ void main() {
     test('hasScopeKey', () {
       Scope()
         ..value<A>(keyA, A('A'))
-        ..run(() {
+        ..runSync(() {
           expect(hasScopeKey<A>(keyA), isTrue);
         });
     });
@@ -98,7 +97,7 @@ void main() {
     test('with not-provided key fails', () {
       Scope()
         ..value<String>(keyS2, 'value S2')
-        ..run(() {
+        ..runSync(() {
           expect(() => use(keyS1), throwsMissingDependencyException);
         });
     });
@@ -121,7 +120,7 @@ void main() {
       Scope()
         ..value<String>(keyS1, 'Hellow')
         ..value<String?>(keyStrWithDefault, 'Hellow')
-        ..run(() {
+        ..runSync(() {
           expect(use(keyS1), 'Hellow');
           expect(use(keyS1, withDefault: () => 'bye'), 'Hellow');
 
@@ -134,7 +133,7 @@ void main() {
       Scope()
         ..value<String?>(keyStrWithDefault, 'provided')
         ..value<String>(keyS1, 'S1 value')
-        ..run(() {
+        ..runSync(() {
           expect(use(keyStrWithDefault), 'provided');
         });
     });
@@ -142,7 +141,7 @@ void main() {
     test('Test String?', () {
       Scope()
         ..value<String?>(keyStrWithDefault, null)
-        ..run(() {
+        ..runSync(() {
           expect(use(keyStrWithDefault), isNull);
         });
     });
@@ -151,10 +150,10 @@ void main() {
   test('prefers innermost provided value', () {
     Scope()
       ..value<String>(keyS1, 'outer')
-      ..run(() {
+      ..runSync(() {
         Scope()
           ..value(keyS1, 'inner')
-          ..run(() {
+          ..runSync(() {
             expect(use(keyS1), 'inner');
           });
       });
@@ -165,7 +164,7 @@ void main() {
       expect(
           () => Scope()
             ..value(keyS1, 1)
-            ..run(() {}),
+            ..runSync(() {}),
           throwsA(const TypeMatcher<TypeError>()));
     });
   });
@@ -174,7 +173,7 @@ void main() {
     test('return an int', () {
       final ageKey = ScopeKey<int>();
       final scope = Scope()..value<int>(ageKey, 18);
-      final age = scope.run<int>(() => use(ageKey));
+      final age = scope.runSync<int>(() => use(ageKey));
 
       expect(age, equals(18));
     });
@@ -193,11 +192,11 @@ void main() {
         ..value(keyANull, outerA)
         ..value(keyI, outerI)
         ..single<B>(keyB, () => B())
-        ..run(() {
+        ..runSync(() {
           Scope()
             ..single<A>(keyA, () => innerA)
             ..single<C>(keyC, () => C())
-            ..run(() {
+            ..runSync(() {
               final a = use(keyA);
               expect(a, innerA);
 
@@ -223,7 +222,7 @@ void main() {
           ..single<E>(keyE, () => E())
           ..single<F>(keyF, () => F())
           ..single<G>(keyG, () => G())
-          ..run(() {});
+          ..runSync(() {});
         fail('should have thrown CircularDependencyException');
       } on CircularDependencyException<dynamic> catch (e) {
         expect(e.keys, [keyE, keyF, keyG]);
@@ -232,7 +231,7 @@ void main() {
       try {
         Scope()
           ..single(keyS1, () => use(keyS1))
-          ..run(
+          ..runSync(
             () {},
           );
         fail('should have thrown CircularDependencyException');
@@ -245,7 +244,7 @@ void main() {
       Scope()
         ..single(keyANull, () => null)
         ..single(keyC, () => C())
-        ..run(() {
+        ..runSync(() {
           expect(use(keyANull), isNull);
           expect(use(keyC).a, isNull);
         });
@@ -255,7 +254,7 @@ void main() {
       var counter = 0;
       Scope()
         ..sequence(keyInt, () => counter++)
-        ..run(() {
+        ..runSync(() {
           use(keyInt);
           expect(use(keyInt), 1);
         });
@@ -264,9 +263,8 @@ void main() {
     test('duplicate dependencies', () {
       /// can add the same key twice to the same scope.
       expect(
-          () => Scope()
-            ..value<A>(keyA, A('first'))
-            ..value<A>(keyA, A('second')),
+          () =>
+              Scope()..value<A>(keyA, A('first'))..value<A>(keyA, A('second')),
           throwsA(isA<DuplicateDependencyException<A>>()));
 
       expect(
@@ -278,13 +276,13 @@ void main() {
       /// keys at different leves are not duplicates.
       Scope()
         ..single<A>(keyA, () => A('first'))
-        ..run(() {
+        ..runSync(() {
           final firstA = use(keyA);
           expect(firstA.value, equals('first'));
 
           Scope()
             ..single<A>(keyA, () => A('second'))
-            ..run(() {
+            ..runSync(() {
               final secondA = use(keyA);
               expect(secondA.value, equals('second'));
             });

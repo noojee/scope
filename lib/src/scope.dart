@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 library scope;
 
 import 'dart:async';
@@ -27,7 +26,7 @@ class Scope {
   /// Create a [Scope] that allows you to inject values.
   ///
   /// Any methods directly or indirectly called from the
-  /// [Scope]s [run] method have access to those injected values.
+  /// [Scope]s [runSync] method have access to those injected values.
   ///
   /// The [debugName] is useful when debugging allowing yo to
   /// provide each [Scope] with a unique name.
@@ -61,7 +60,7 @@ class Scope {
   ///
   /// The [value] can be retrieve by calling
   /// [use] from anywhere within the action
-  /// method provided to [run]
+  /// method provided to [runSync]
   ///
   /// ```dart
   /// Scope()
@@ -97,8 +96,8 @@ class Scope {
   /// The [single]'s factory method may [use] [value]s, other [single]s
   /// and [sequence]s registered within the SAME [Scope].
   ///
-  /// Each [single] is eagerly called when [Scope.run] is called
-  /// and are fully resolved when the [Scope.run]'s s action is called.
+  /// Each [single] is eagerly called when [Scope.runSync] is called
+  /// and are fully resolved when the [Scope.runSync]'s s action is called.
   ///
   /// ```dart
   /// Scope()
@@ -125,7 +124,7 @@ class Scope {
   /// the [sequence]s [factory] method is called each time [use] for
   /// the [sequence]'s [key] is called.
   ///
-  /// The [sequence] [factory] method is NOT called when the [run] method
+  /// The [sequence] [factory] method is NOT called when the [runSync] method
   /// is called.
   ///
   /// ```dart
@@ -140,7 +139,30 @@ class Scope {
   }
 
   /// Runs [action] within the defined [Scope].
-  R run<R>(R Function() action) {
+  Future<R> run<R>(Future<R> Function() action) async {
+    _resolveSingles();
+
+    // /// run the action adding our values into the zone map.
+    // return runZoned(action, zoneValues: {
+    //   _Injector: _Injector(_provided.map<ScopeKey<dynamic>, dynamic>(
+    //       (key, dynamic v) => MapEntry<ScopeKey<dynamic>, dynamic>(key, v))),
+    // });
+
+    return await runZoned(action, zoneValues: {
+      Injector:
+          Injector(_provided.map<ScopeKey<dynamic>, dynamic>((key, dynamic v) {
+        if (v is Function) {
+          return MapEntry<ScopeKey<dynamic>, dynamic>(
+              key, key.testFunctionCast(v));
+        } else {
+          return MapEntry<ScopeKey<dynamic>, dynamic>(key, key.testCast(v));
+        }
+      })),
+    });
+  }
+
+  /// Runs [action] within the defined [Scope].
+  R runSync<R>(R Function() action) {
     _resolveSingles();
 
     // /// run the action adding our values into the zone map.

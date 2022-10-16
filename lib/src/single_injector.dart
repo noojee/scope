@@ -4,7 +4,6 @@
  * Written by Brett Sutton <bsutton@onepub.dev>, Jan 2022
  */
 
-
 import 'dart:async';
 import 'dart:collection';
 
@@ -17,12 +16,12 @@ typedef _ValueFactory<T> = T? Function();
 /// Used by [Scope.single].
 class SingleInjector extends Injector {
   ///
-  SingleInjector(this.factories) : super(<ScopeKey<dynamic>, dynamic>{});
+  SingleInjector(this._factories) : super(<ScopeKey<dynamic>, dynamic>{});
 
   ///
-  final Map<ScopeKey<dynamic>, _ValueFactory<dynamic>> factories;
+  final Map<ScopeKey<dynamic>, _ValueFactory<dynamic>> _factories;
 
-  /// All keys from [factories] for which the factory function has been called
+  /// All keys from [_factories] for which the factory function has been called
   /// and not yet returned. Iteration order represents call order.
   // ignore: prefer_collection_literals
   final underConstruction = LinkedHashSet<ScopeKey<dynamic>>();
@@ -39,7 +38,7 @@ class SingleInjector extends Injector {
 
   @override
   T get<T>(ScopeKey<T> key) {
-    if (!factories.containsKey(key)) {
+    if (!_factories.containsKey(key)) {
       return super.get(key);
     }
     if (!values.containsKey(key)) {
@@ -48,7 +47,7 @@ class SingleInjector extends Injector {
         throw CircularDependencyException(
             List.unmodifiable(underConstruction.skipWhile((t) => t != key)));
       }
-      values[key] = zone.run<T>(factories[key]! as T Function());
+      values[key] = zone.run<T>(_factories[key]! as T Function());
       // ignore: prefer_asserts_with_message
       assert(underConstruction.last == key);
       underConstruction.remove(key);
