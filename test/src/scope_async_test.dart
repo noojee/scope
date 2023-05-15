@@ -200,11 +200,11 @@ void main() {
       final scope = Scope()
         ..value(keyANull, outerA)
         ..value(keyI, outerI)
-        ..single<B>(keyB, () => B());
+        ..single<B>(keyB, B.new);
       await scope.run(() async {
         final innerScope = Scope()
           ..single<A>(keyA, () => innerA)
-          ..single<C>(keyC, () => C());
+          ..single<C>(keyC, C.new);
         await innerScope.run(() async {
           final a = use(keyA);
           expect(a, innerA);
@@ -226,11 +226,11 @@ void main() {
       try {
         final scope = Scope()
           ..single<A>(keyA, () => A('value'))
-          ..single<C>(keyC, () => C())
-          ..single<D>(keyD, () => D())
-          ..single<E>(keyE, () => E())
-          ..single<F>(keyF, () => F())
-          ..single<G>(keyG, () => G());
+          ..single<C>(keyC, C.new)
+          ..single<D>(keyD, D.new)
+          ..single<E>(keyE, E.new)
+          ..single<F>(keyF, F.new)
+          ..single<G>(keyG, G.new);
         await scope.run(() async {});
         fail('should have thrown CircularDependencyException');
       } on CircularDependencyException<dynamic> catch (e) {
@@ -251,7 +251,7 @@ void main() {
     test('handles null values', () async {
       final scope = Scope()
         ..single(keyANull, () => null)
-        ..single(keyC, () => C());
+        ..single(keyC, C.new);
       await scope.run(() async {
         expect(use(keyANull), isNull);
         expect(use(keyC).a, isNull);
@@ -270,8 +270,9 @@ void main() {
     test('duplicate dependencies', () async {
       /// can add the same key twice to the same scope.
       expect(
-          () =>
-              Scope()..value<A>(keyA, A('first'))..value<A>(keyA, A('second')),
+          () => Scope()
+            ..value<A>(keyA, A('first'))
+            ..value<A>(keyA, A('second')),
           throwsA(isA<DuplicateDependencyException<A>>()));
 
       expect(
