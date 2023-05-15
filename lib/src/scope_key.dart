@@ -84,7 +84,7 @@ class ScopeKey<T> {
   T Function() testFunctionCast(dynamic v) => v as T Function();
 
   @override
-  String toString() => 'ScopeKey<${_typeOf<T>().toString()}>($_debugName)';
+  String toString() => 'ScopeKey<${_typeOf<T>()}>($_debugName)';
 }
 
 Type _typeOf<T>() => T;

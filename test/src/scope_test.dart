@@ -8,7 +8,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:scope/scope.dart';
-
 import 'package:test/test.dart';
 
 final throwsMissingDependencyException =
@@ -29,6 +28,7 @@ final keyD = ScopeKey<D>('D');
 final keyE = ScopeKey<E>('E');
 final keyF = ScopeKey<F>('F');
 final keyG = ScopeKey<G>('G');
+// ignore: unreachable_from_main
 final keyGNull = ScopeKey<G?>('G?');
 final keyI = ScopeKey<I>('I');
 final keyInt = ScopeKey<int>('int');
@@ -263,8 +263,9 @@ void main() {
     test('duplicate dependencies', () {
       /// can add the same key twice to the same scope.
       expect(
-          () =>
-              Scope()..value<A>(keyA, A('first'))..value<A>(keyA, A('second')),
+          () => Scope()
+            ..value<A>(keyA, A('first'))
+            ..value<A>(keyA, A('second')),
           throwsA(isA<DuplicateDependencyException<A>>()));
 
       expect(
@@ -340,6 +341,7 @@ class G {
   final E? e;
 }
 
+// ignore: unreachable_from_main
 class H {
   H() : g = use(keyGNull);
   final G? g;

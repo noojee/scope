@@ -1,16 +1,7 @@
 include: package:lint_hard/all.yaml
 
 
-analyzer:
-  language:
-    strict-raw-types: true
-    strict-inference: true
-    # enable post 2.16
-    # strict-casts: true
-  strong-mode:
-    implicit-casts: false
-
-
 linter:
   rules:
     public_member_api_docs : true     
+    avoid_print: false  

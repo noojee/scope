@@ -22,6 +22,7 @@ final keyD = ScopeKey<D>('D');
 final keyE = ScopeKey<E>('E');
 final keyF = ScopeKey<F>('F');
 final keyG = ScopeKey<G>('G');
+// ignore: unreachable_from_main
 final keyGNull = ScopeKey<G?>('G?');
 final keyI = ScopeKey<I>('I');
 final keyInt = ScopeKey<int>('int');
@@ -344,6 +345,7 @@ class G {
   final E? e;
 }
 
+// ignore: unreachable_from_main
 class H {
   H() : g = use(keyGNull);
   final G? g;

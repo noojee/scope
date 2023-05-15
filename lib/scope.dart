@@ -6,9 +6,9 @@
 
 export 'src/exceptions.dart'
     show
-        MissingDependencyException,
         CircularDependencyException,
-        DuplicateDependencyException;
+        DuplicateDependencyException,
+        MissingDependencyException;
 export 'src/global_scope.dart';
 export 'src/scope.dart'
-    show Scope, use, hasScopeKey, isWithinScope, isNullable, ScopeKey;
+    show Scope, ScopeKey, hasScopeKey, isNullable, isWithinScope, use;
