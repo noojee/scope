@@ -1,3 +1,6 @@
+# 4.0.0
+- upgraded to dart 3.0.
+
 # 3.0.0
 - BREAKING: The Scope.run method is now asynchronous. Use Scope.runSync to run a synchronous method.
   You will likely have to change how you call the run method.
