@@ -1,9 +1,9 @@
 name: scope
 version: 4.0.1
-homepage: https://github.com/noojee/scope
-documentation: https://scope.noojee.dev
+homepage: https://github.com/onepub-dev/scope
+documentation: https://scope.onepub.dev
 description: A Dependency injection (Inversion of Control) library. Supports nested Scopes and multiple values of the same type.
-repository: https://github.com/noojee/scope
+repository: https://github.com/onepub-dev/scope
 environment: 
   sdk: '>=3.0.0 <4.0.0'
 dependencies: 
