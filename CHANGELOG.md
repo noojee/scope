@@ -1,3 +1,7 @@
+# 4.1.1
+- Fixed an error in the README example. Use of wrong type.
+- Cleared out a few lint fixes.
+
 # 4.1.0
 - update links to doc and repo.
 
