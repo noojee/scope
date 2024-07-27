@@ -38,7 +38,7 @@ void main() {
     ..value<int>(ageKey, 18)
     ..value<int>(heightKey, 182) // centimetres
     /// single value from factory method
-    ..single<Db>(incomeKey, () => calcIncome)
+    ..single<Money>(incomeKey, () => calcIncome)
     /// sequence of values from factory method.
     ..sequence<int>(countKey, () => tracker)
     
