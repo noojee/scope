@@ -116,10 +116,10 @@ enum LicenseType { pro, team, enterprise }
 Money getLicenseFee() {
   switch (use(licenseType)) {
     case LicenseType.pro:
-      return Money.parse(r'$10.00', code: 'USD');
+      return Money.parse(r'$10.00', isoCode: 'USD');
     case LicenseType.team:
-      return Money.parse(r'$15.00', code: 'USD');
+      return Money.parse(r'$15.00', isoCode: 'USD');
     case LicenseType.enterprise:
-      return Money.parse(r'$20.00', code: 'USD');
+      return Money.parse(r'$20.00', isoCode: 'USD');
   }
 }
