@@ -1,3 +1,6 @@
+# 5.0.0
+- updated dev dependencies.
+
 # 4.1.1
 - Fixed an error in the README example. Use of wrong type.
 - Cleared out a few lint fixes.
