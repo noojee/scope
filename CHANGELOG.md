@@ -1,3 +1,6 @@
+# 5.1.0
+- changed ScopeKey ctors so they are consts. The examples that show them being consts are now correct.
+
 # 5.0.0
 - updated dev dependencies.
 
