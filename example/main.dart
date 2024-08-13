@@ -14,9 +14,9 @@ import 'package:money2/money2.dart';
 import 'package:scope/scope.dart';
 
 /// declare the keys we use to inject values.
-final tenantKey = ScopeKey<int>();
-final licenseType = ScopeKey<LicenseType>();
-final licenseFee = ScopeKey<Money>();
+const tenantKey = ScopeKey<int>();
+const licenseType = ScopeKey<LicenseType>();
+const licenseFee = ScopeKey<Money>();
 
 void main() async {
   /// Inject details required to bill a tenant.
@@ -85,7 +85,7 @@ class Transaction<R> {
   final Db db;
 
   // ignore: strict_raw_type
-  static final ScopeKey<Transaction> transactionKey =
+  static const ScopeKey<Transaction> transactionKey =
       // ignore: strict_raw_type
       ScopeKey<Transaction>('transaction');
 

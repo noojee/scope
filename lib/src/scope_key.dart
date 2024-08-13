@@ -43,9 +43,9 @@ class ScopeKey<T> {
   ///     int count = use(countKey);
   /// });
   /// ```
-  ScopeKey([String? debugName]) : _defaultValue = _Sentinel.noValue {
-    _debugName = debugName ?? 'debugName=?';
-  }
+  const ScopeKey([String? debugName])
+      : _defaultValue = _Sentinel.noValue,
+        _debugName = debugName ?? 'debugName=?';
 
   /// Create a ScopeKey that provides a default value if the
   /// key has not been added to the scope.
@@ -56,11 +56,10 @@ class ScopeKey<T> {
   ///  int count = use(countKey);
   /// ```
   ScopeKey.withDefault(T defaultValue, [String? debugName])
-      : _defaultValue = defaultValue {
-    _debugName = debugName ?? 'debugName=?';
-  }
+      : _defaultValue = defaultValue,
+        _debugName = debugName ?? 'debugName=?';
 
-  late final String _debugName;
+  final String _debugName;
 
   /// We use [Object] to hold the default as it
   /// can contain [_Sentinel.noValue]

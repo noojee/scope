@@ -9,24 +9,24 @@ import 'package:test/test.dart';
 final throwsMissingDependencyException =
     throwsA(const TypeMatcher<MissingDependencyException<dynamic>>());
 
-final keyS1 = ScopeKey<String>('S1');
-final keyS2 = ScopeKey<String>('S2');
+const keyS1 = ScopeKey<String>('S1');
+const keyS2 = ScopeKey<String>('S2');
 final keyStrWithDefault = ScopeKey<String?>.withDefault(
     'StrWithDefault default value', 'StrWithDefault');
 final keyNullStrWithDefault =
     ScopeKey<String?>.withDefault(null, 'NullStrWithDefault');
 
-final keyA = ScopeKey<A>('A');
-final keyANull = ScopeKey<A?>('A?');
-final keyB = ScopeKey<B>('B');
-final keyC = ScopeKey<C>('C');
-final keyD = ScopeKey<D>('D');
-final keyE = ScopeKey<E>('E');
-final keyF = ScopeKey<F>('F');
-final keyG = ScopeKey<G>('G');
-final keyGNull = ScopeKey<G?>('G?');
-final keyI = ScopeKey<I>('I');
-final keyInt = ScopeKey<int>('int');
+const keyA = ScopeKey<A>('A');
+const keyANull = ScopeKey<A?>('A?');
+const keyB = ScopeKey<B>('B');
+const keyC = ScopeKey<C>('C');
+const keyD = ScopeKey<D>('D');
+const keyE = ScopeKey<E>('E');
+const keyF = ScopeKey<F>('F');
+const keyG = ScopeKey<G>('G');
+const keyGNull = ScopeKey<G?>('G?');
+const keyI = ScopeKey<I>('I');
+const keyInt = ScopeKey<int>('int');
 
 const oneSecond = Duration(seconds: 1);
 void main() {
@@ -42,10 +42,10 @@ void main() {
   });
 
   test('scope ...', () async {
-    final keyAge = ScopeKey<int>('an int');
-    final keyName = ScopeKey<String>('a String');
-    final keySeed = ScopeKey<String>('Random Seed');
-    final keyRandom = ScopeKey<String>('Random Sequency');
+    const keyAge = ScopeKey<int>('an int');
+    const keyName = ScopeKey<String>('a String');
+    const keySeed = ScopeKey<String>('Random Seed');
+    const keyRandom = ScopeKey<String>('Random Sequency');
 
     final scope = Scope()
       ..value<int>(keyAge, 10)
@@ -62,7 +62,7 @@ void main() {
 
   group('async calls', () {
     test('scope ...', () async {
-      final keyAge = ScopeKey<int>('age');
+      const keyAge = ScopeKey<int>('age');
 
       final scope = Scope()..value<int>(keyAge, 18);
 
@@ -181,7 +181,7 @@ void main() {
 
   group('return values', () {
     test('return an int', () async {
-      final ageKey = ScopeKey<int>();
+      const ageKey = ScopeKey<int>();
       final scope = Scope()..value<int>(ageKey, 18);
       final age = await scope.run<int>(() async => use(ageKey));
 

@@ -9,8 +9,8 @@
 import 'package:scope/scope.dart';
 import 'package:test/test.dart';
 
-final userKey = ScopeKey<User>();
-final counterKey = ScopeKey<int>();
+const userKey = ScopeKey<User>();
+const counterKey = ScopeKey<int>();
 
 final realUser = User('real');
 final testUser = User('test');
